@@ -1,0 +1,3 @@
+MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+COLLECTION_NAME = "financial"
+FILE_PATH = "./AAPL_10-K_1A_temp.md"
