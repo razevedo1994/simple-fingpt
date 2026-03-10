@@ -18,3 +18,5 @@ def create_collection(collection: str, endpoint: str) -> None:
             )
     except Exception as e:
         print(e)
+
+    return qdrant
