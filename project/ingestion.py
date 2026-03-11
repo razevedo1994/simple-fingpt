@@ -29,3 +29,18 @@ for chunk in chunks:
     points.append(point)
 
     client_qdrant.upload_points(collection_name=COLLECTION_NAME, points=points)
+
+
+query_text = "what are the main financial risks?"
+query_embedding = list(model.query_embed([query_text]))[0].tolist()
+
+results = client_qdrant.query_points(
+    collection_name=COLLECTION_NAME,
+    query=query_embedding,
+    limit=3,
+)
+
+for r in results.points:
+    print(f"Score: {r.score}")
+    print(f"Texto: {r.payload['text'][:100]}")
+    print("-" * 80)
