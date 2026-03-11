@@ -6,6 +6,8 @@ def create_collection(collection: str, endpoint: str) -> None:
         url=endpoint,
     )
 
+    delete_collection(collection, qdrant)
+
     try:
         if not qdrant.collection_exists(collection_name=collection):
 
@@ -20,3 +22,7 @@ def create_collection(collection: str, endpoint: str) -> None:
         print(e)
 
     return qdrant
+
+
+def delete_collection(collection: str, qdrant_client: QdrantClient):
+    qdrant_client.delete_collection(collection_name=collection)
