@@ -2,7 +2,7 @@ import uuid
 from fastembed import TextEmbedding, SparseTextEmbedding
 from qdrant_client import models
 from storage.vector_storage import create_collection
-from config.settings import FILE_PATH, COLLECTION_NAME, QDRANT_ENDPOINT, MODEL_NAME
+from config.settings import FILE_PATH, COLLECTION_NAME, QDRANT_ENDPOINT, DENSE_MODEL
 
 
 client_qdrant = create_collection(
@@ -16,7 +16,7 @@ with open(FILE_PATH, "r", encoding="utf-8") as file:
 paragraphs = content.split("\n\n")
 chunks = [p.strip() for p in paragraphs if len(p.strip()) > 50]
 
-model = TextEmbedding(MODEL_NAME)
+model = TextEmbedding(DENSE_MODEL)
 
 points = []
 for chunk in chunks:

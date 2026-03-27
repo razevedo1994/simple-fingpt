@@ -1,4 +1,4 @@
-MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+DENSE_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 COLLECTION_NAME = "financial"
 FILE_PATH = "./config/AAPL_10-K_1A_temp.md"
 QDRANT_ENDPOINT = "http://localhost:6333"
