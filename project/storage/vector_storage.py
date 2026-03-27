@@ -13,10 +13,15 @@ def create_collection(collection: str, endpoint: str) -> None:
 
             qdrant.create_collection(
                 collection_name=collection,
-                vectors_config=models.VectorParams(
-                    size=384,
-                    distance=models.Distance.COSINE,
-                ),
+                vectors_config={
+                    "dense": models.VectorParams(
+                        size=384,
+                        distance=models.Distance.COSINE,
+                    )
+                },
+                sparse_vectors_config={
+                    "sparse": models.SparseVectorParams(),
+                },
             )
     except Exception as e:
         print(e)
