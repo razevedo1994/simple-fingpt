@@ -17,7 +17,14 @@ def create_collection(collection: str, endpoint: str) -> None:
                     "dense": models.VectorParams(
                         size=384,
                         distance=models.Distance.COSINE,
-                    )
+                    ),
+                    "colbert": models.VectorParams(
+                        size=128,
+                        distance=models.Distance.COSINE,
+                        multivector_config=models.MultiVectorConfig(
+                            comparator=models.MultiVectorComparator.MAX_SIM,
+                        ),
+                    ),
                 },
                 sparse_vectors_config={
                     "sparse": models.SparseVectorParams(),
