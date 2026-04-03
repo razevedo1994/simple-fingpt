@@ -1,5 +1,9 @@
 import uuid
-from fastembed import TextEmbedding, SparseTextEmbedding, LateInteractionTextEmbedding
+from fastembed import (
+    TextEmbedding,
+    SparseTextEmbedding,
+    LateInteractionTextEmbedding,
+)
 from qdrant_client import models
 from storage.vector_storage import create_collection
 from config.settings import (
