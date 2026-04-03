@@ -80,8 +80,10 @@ results = client_qdrant.query_points(
     using="colbert",
     limit=3,
 )
+max_score = max(result.score for result in results.points)
 
 for r in results.points:
-    print(f"Score: {r.score}")
+    normalized_score = r.score / max_score
+    print(f"Score: {normalized_score}")
     print(f"Texto: {r.payload['text'][:100]}")
     print("-" * 80)
