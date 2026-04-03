@@ -54,22 +54,30 @@ for chunk in chunks:
 query_text = "what are the main financial risks?"
 query_dense = list(dense_model.query_embed([query_text]))[0].tolist()
 query_sparse = list(sparse_model.query_embed([query_text]))[0].as_object()
+query_colbert = list(colbert_model.query_embed([query_text]))[0].tolist()
 
 results = client_qdrant.query_points(
     collection_name=COLLECTION_NAME,
     prefetch=[
         {
-            "query": query_dense,
-            "using": "dense",
-            "limit": 10,
-        },
-        {
-            "query": query_sparse,
-            "using": "sparse",
-            "limit": 10,
-        },
+            "prefetch": [
+                {
+                    "query": query_dense,
+                    "using": "dense",
+                    "limit": 10,
+                },
+                {
+                    "query": query_sparse,
+                    "using": "sparse",
+                    "limit": 10,
+                },
+            ],
+            "query": models.FusionQuery(fusion=models.Fusion.RRF),
+            "limit": 20,
+        }
     ],
-    query=models.FusionQuery(fusion=models.Fusion.RRF),
+    query=query_colbert,
+    using="colbert",
     limit=3,
 )
 
