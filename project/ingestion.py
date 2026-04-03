@@ -12,6 +12,7 @@ from config.settings import (
     QDRANT_ENDPOINT,
     DENSE_MODEL,
     SPARSE_MODEL,
+    COLBERT_MODEL,
 )
 
 
@@ -28,17 +29,20 @@ chunks = [p.strip() for p in paragraphs if len(p.strip()) > 50]
 
 dense_model = TextEmbedding(DENSE_MODEL)
 sparse_model = SparseTextEmbedding(SPARSE_MODEL)
+colbert_model = LateInteractionTextEmbedding(COLBERT_MODEL)
 
 points = []
 for chunk in chunks:
     dense_embedding = list(dense_model.passage_embed([chunk]))[0].tolist()
     sparse_embedding = list(sparse_model.passage_embed([chunk]))[0].as_object()
+    colbert_embedding = list(colbert_model.passage_embed([chunk]))[0].tolist()
 
     point = models.PointStruct(
         id=str(uuid.uuid4()),
         vector={
             "dense": dense_embedding,
             "sparse": sparse_embedding,
+            "colbert": colbert_embedding,
         },
         payload={"text": chunk, "source": FILE_PATH},
     )
