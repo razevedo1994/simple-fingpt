@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12.2"
 dependencies = [
+    "hdbscan>=0.8.42",
     "python-dotenv>=1.2.2",
     "qdrant-client[fastembed]>=1.17.0",
     "ruff>=0.15.4",
