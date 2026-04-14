@@ -10,7 +10,6 @@ def create_collection(collection: str, endpoint: str) -> None:
 
     try:
         if not qdrant.collection_exists(collection_name=collection):
-
             qdrant.create_collection(
                 collection_name=collection,
                 vectors_config={
