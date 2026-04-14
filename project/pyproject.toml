@@ -8,4 +8,5 @@ dependencies = [
     "python-dotenv>=1.2.2",
     "qdrant-client[fastembed]>=1.17.0",
     "ruff>=0.15.4",
+    "sentence-transformers>=5.4.1",
 ]
