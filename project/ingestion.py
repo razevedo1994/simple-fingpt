@@ -7,13 +7,16 @@ from fastembed import (
 from qdrant_client import models
 from storage.vector_storage import create_collection
 from config.settings import (
-    FILE_PATH,
+    EMAIL,
+    MAX_TOKENS,
     COLLECTION_NAME,
     QDRANT_ENDPOINT,
     DENSE_MODEL,
     SPARSE_MODEL,
     COLBERT_MODEL,
 )
+from utils.semantic_chunker import SemanticChunker
+from utils.edgar_client import EdgarClient
 
 
 client_qdrant = create_collection(
@@ -21,18 +24,36 @@ client_qdrant = create_collection(
     endpoint=QDRANT_ENDPOINT,
 )
 
-with open(FILE_PATH, "r", encoding="utf-8") as file:
-    content = file.read()
+edgar = EdgarClient(email=EMAIL)
 
-paragraphs = content.split("\n\n")
-chunks = [p.strip() for p in paragraphs if len(p.strip()) > 50]
+data_10k = edgar.fetch_filing_data("AAPL", "10-Q")
+text_10k = edgar.get_combined_data(data_10k)
+
+data_10q = edgar.fetch_filing_data("AAPL", "10-Q")
+text_10q = edgar.get_combined_data(data_10k)
+
+chunker = SemanticChunker(max_tokens=MAX_TOKENS)
+
+all_chunks = []
+for data, text in [(data_10k, text_10q), (data_10q, text_10q)]:
+    chunks = chunker.create_chunks(text)
+    for chunk in chunks:
+        all_chunks.append(
+            {
+                "text": chunk,
+                "metadata": data["metadata"],
+            }
+        )
 
 dense_model = TextEmbedding(DENSE_MODEL)
 sparse_model = SparseTextEmbedding(SPARSE_MODEL)
 colbert_model = LateInteractionTextEmbedding(COLBERT_MODEL)
 
 points = []
-for chunk in chunks:
+for chunk_data in all_chunks:
+    chunk = chunk_data["text"]
+    metadata = chunk_data["metadata"]
+
     dense_embedding = list(dense_model.passage_embed([chunk]))[0].tolist()
     sparse_embedding = list(sparse_model.passage_embed([chunk]))[0].as_object()
     colbert_embedding = list(colbert_model.passage_embed([chunk]))[0].tolist()
@@ -44,11 +65,15 @@ for chunk in chunks:
             "sparse": sparse_embedding,
             "colbert": colbert_embedding,
         },
-        payload={"text": chunk, "source": FILE_PATH},
+        payload={"text": chunk, "metadata": metadata},
     )
     points.append(point)
 
-    client_qdrant.upload_points(collection_name=COLLECTION_NAME, points=points)
+client_qdrant.upload_points(
+    collection_name=COLLECTION_NAME,
+    points=points,
+    batch_size=5,
+)
 
 
 query_text = "what are the main financial risks?"
